@@ -1,0 +1,60 @@
+name: SPR TechForge UI Automation
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore SprTechForge.Automation.csproj
+
+      - name: Build
+        run: dotnet build SprTechForge.Automation.csproj --configuration Release --no-restore
+
+      - name: Run Selenium UI tests
+        env:
+          BROWSER: chrome
+          HEADLESS: true
+        run: |
+          dotnet test SprTechForge.Automation.csproj \
+            --configuration Release \
+            --no-build \
+            --filter "TestCategory=WebinarRegistration" \
+            --logger "trx;LogFileName=webinar-registration.trx" \
+            --results-directory TestResults
+
+      - name: Publish test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults/
+
+      - name: Publish failure screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failed-screenshots
+          path: bin/Release/net8.0/Artifacts/Screenshots/
+          if-no-files-found: ignore

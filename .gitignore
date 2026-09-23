@@ -1,0 +1,29 @@
+# .NET build output
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Test results
+TestResults/
+*.trx
+
+# Automation artifacts
+Artifacts/
+Artifacts/Screenshots/
+
+# Reqnroll generated files
+*.feature.cs
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.log

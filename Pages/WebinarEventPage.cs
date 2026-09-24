@@ -37,18 +37,24 @@ public sealed class WebinarEventPage : BasePage
             "'ABCDEFGHIJKLMNOPQRSTUVWXYZ', " +
             "'abcdefghijklmnopqrstuvwxyz'), " +
             "'registration successful')]");
-
     private readonly By[] ValidationSelectors =
     {
-        By.CssSelector("input:invalid"),
-        By.CssSelector("select:invalid"),
-        By.CssSelector("textarea:invalid"),
-        By.CssSelector("[role='alert']"),
-        By.CssSelector(".error"),
-        By.CssSelector(".errors"),
-        By.CssSelector(".validation-error"),
-        By.CssSelector(".invalid-feedback")
-    };
+    By.CssSelector("input:invalid"),
+    By.CssSelector("select:invalid"),
+    By.CssSelector("textarea:invalid"),
+    By.CssSelector("[role='alert']"),
+    By.CssSelector(".error"),
+    By.CssSelector(".errors"),
+    By.CssSelector(".validation-error"),
+    By.CssSelector(".invalid-feedback"),
+
+    // Application-specific validation messages
+    By.XPath(
+        "//*[contains(translate(normalize-space(.), " +
+        "'ABCDEFGHIJKLMNOPQRSTUVWXYZ', " +
+        "'abcdefghijklmnopqrstuvwxyz'), " +
+        "'enter valid mobile number')]")
+};
 
     public WebinarEventPage(
         IWebDriver driver,
@@ -259,7 +265,28 @@ public sealed class WebinarEventPage : BasePage
             }
         }
 
-        return false;
+        // Check HTML5/browser validation state for form controls.
+        var invalidElements = Driver.FindElements(
+            By.CssSelector("input, select, textarea"))
+            .Where(element =>
+            {
+                try
+                {
+                    var validity = ((IJavaScriptExecutor)Driver)
+                        .ExecuteScript(
+                            "return arguments[0].validity && " +
+                            "(!arguments[0].validity.valid);",
+                            element);
+
+                    return validity is bool isInvalid && isInvalid;
+                }
+                catch
+                {
+                    return false;
+                }
+            });
+
+        return invalidElements.Any();
     }
 
     private void WaitForSpaContent()
@@ -330,4 +357,5 @@ public sealed class WebinarEventPage : BasePage
         throw new InvalidOperationException(
             $"Could not find option '{optionText}'.");
     }
+
 }

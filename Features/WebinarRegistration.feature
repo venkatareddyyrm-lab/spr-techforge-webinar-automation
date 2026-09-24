@@ -17,3 +17,13 @@ Feature: Webinar registration
   Scenario: Registration is rejected when required fields are invalid
     When I submit the registration form with empty name and invalid email
     Then I should see registration validation errors
+
+  @InvalidEmail
+  Scenario: Registration is rejected when email is invalid
+    When I submit the registration form with valid name and invalid email
+    Then I should see an email validation error
+
+  @InvalidMobile
+  Scenario: Registration is rejected when mobile number is invalid
+    When I submit the registration form with valid name and invalid mobile number
+    Then I should see a mobile validation error

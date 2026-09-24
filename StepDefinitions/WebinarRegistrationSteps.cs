@@ -85,5 +85,57 @@ public sealed class WebinarRegistrationSteps
         _page.HasValidationError().Should().BeTrue(
             "invalid registration data should trigger visible validation errors");
     }
-    
+
+    [When("I submit the registration form with valid name and invalid email")]
+    public void WhenISubmitRegistrationWithInvalidEmail()
+    {
+        var faker = new Faker("en");
+
+        var name = faker.Name.FullName();
+
+        _scenarioContext["GeneratedName"] = name;
+        _scenarioContext["GeneratedEmail"] = "invalid-email";
+
+        _page.FillForm(
+            name,
+            "invalid-email",
+            "9876543210");
+
+        _page.ClickRegister();
+    }
+
+    [Then("I should see an email validation error")]
+    public void ThenIShouldSeeAnEmailValidationError()
+    {
+        _page.HasValidationError().Should().BeTrue(
+            "an invalid email should trigger an email validation error");
+    }
+
+    [When("I submit the registration form with valid name and invalid mobile number")]
+public void WhenISubmitRegistrationWithInvalidMobile()
+{
+    var faker = new Faker("en");
+
+    var name = faker.Name.FullName();
+    var email = $"qa.{Guid.NewGuid():N}@example.test";
+
+    _scenarioContext["GeneratedName"] = name;
+    _scenarioContext["GeneratedEmail"] = email;
+
+        _page.FillForm(
+      name,
+      email,
+      "123456789");
+
+        _page.ClickRegister();
+
+        
+
+    }
+    [Then("I should see a mobile validation error")]
+    public void ThenIShouldSeeMobileValidationError()
+    {
+        _page.HasValidationError().Should().BeTrue(
+            "an invalid mobile number should trigger a mobile validation error");
+    }
 }

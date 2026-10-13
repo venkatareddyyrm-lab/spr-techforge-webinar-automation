@@ -4,6 +4,7 @@ using OpenQA.Selenium.Support.UI;
 
 
 namespace SprTechForge.Automation.Pages;
+//This page defines regarding webinar registration base page 
 
 public abstract class BasePage
 {
